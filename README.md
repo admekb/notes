@@ -1,9 +1,9 @@
 
-# Работа с уровнями изоляции транзакции в PostgreSQL
+# Настройка postgres
 
 ## сделать в первой сессии новую таблицу и наполнить ее данными
 
-```bash
+```sql
 iso=# create table persons(id serial, first_name text, second_name text);
 CREATE TABLE
 iso=*# insert into persons(first_name, second_name) values('ivan', 'ivanov');
