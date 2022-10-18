@@ -29,7 +29,7 @@ hba_file = '/etc/postgresql/14/main/pg_hba.conf'
 ident_file = '/etc/postgresql/14/main/pg_ident.conf'
 ```
 ## postgresql.auto.conf
-*имеет выше приоритет чем postgresql.conf, изменения вносятся через alter set*
+*имеет выше приоритет чем postgresql.conf, изменения вносятся через alter system set*
 ## посмотреть текущий уровень изоляции
 
 ## pg_settings
