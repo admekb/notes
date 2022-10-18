@@ -13,13 +13,18 @@
 ```sql
 show config_file
 ```
-
+> расположение по умолчанию
 ```console
 /var/lib/pgsql/data/postgresql.conf - Centos
 /etc/postgresql/14/main/postgresql.conf - Ubuntu
 /user/local/var/postgres/postgres.conf - MacOS
 ```
-
+> расположение по умолчанию
+```console
+/var/lib/pgsql/data/postgresql.conf - Centos
+/etc/postgresql/14/main/postgresql.conf - Ubuntu
+/user/local/var/postgres/postgres.conf - MacOS
+```
 ## посмотреть текущий уровень изоляции
 
 ```bash
