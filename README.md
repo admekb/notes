@@ -66,7 +66,7 @@ rollback;
 * Признак не правильной настройки work_mem переполненный каталог /var/lib/pgsql/14/base/pgsql_temp
 
 ## pg_file_settings
-* отображение раскоментированных параметров
+* отображение раскомментированных параметров
 ```sql
 select * from pg_file_settings;
 ```
