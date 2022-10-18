@@ -49,21 +49,21 @@ select * from pg_settings where name=max_connections=200;
 ```sql
 select pg_reload_conf();
 ```
-* user - применится на уровне сессии
-* sighup - нужен select pg_reload_conf()
-* postmaster - необходим рестарт сервиса
-* superuser - может задать на суперпользователь на уровне сессии
-* internal - параметры которые задаются на уровне сборки кластера
-* superuser-backend - применятся в рамках сессии для суперюзера при следующем входе
+* internal – изменить нельзя, задано при установке
+* postmaster – перезапуск сервера
+* sighup – повторное считывание файлов конфигурации •
+* superuser – во время выполнения, только суперпользователь
+* user – во время выполнения, любой пользователь
+* backend - при запуске нового сеанса
 
-```bash
-iso=# show transaction isolation level;
- transaction_isolation
------------------------
- read committed
-(1 row)
+> пример применения на транзакцию
+```sql
+begin;
+set work_mem = '128MB';
+show work_mem;
+rollback;
 ```
-
+* Признак не правильной настройки work_mem переполненный каталог /var/lib/pgsql/14/base/pgsql_temp
 ## в первой сессии добавить новую запись
 
 ```bash
