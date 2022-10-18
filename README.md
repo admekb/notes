@@ -1,16 +1,23 @@
 
 # Настройка postgres
+Причины торможения postgres:
+* 80% связано либо с кривыми запросами либо отсутствием индексов
+* 20% не оптимально настроенный postgres
+Настройка возможна:
+* прописать их в запуске службы postgres -c name=value
+* прописать в файлах с параметрами (действует постоянно)
+* непосредственно в сесси (действует до конца транзакции/сессии)
 
-## сделать в первой сессии новую таблицу и наполнить ее данными
-
+## postgresql.conf
+- посмотреть расположение
 ```sql
-iso=# create table persons(id serial, first_name text, second_name text);
-CREATE TABLE
-iso=*# insert into persons(first_name, second_name) values('ivan', 'ivanov');
-INSERT 0 1
-iso=*# insert into persons(first_name, second_name) values('petr', 'petrov');
-INSERT 0 1
-iso=*# commit;
+show config_file
+```
+
+```console
+/var/lib/pgsql/data/postgresql.conf - Centos
+/etc/postgresql/14/main/postgresql.conf - Ubuntu
+/user/local/var/postgres/postgres.conf - MacOS
 ```
 
 ## посмотреть текущий уровень изоляции
