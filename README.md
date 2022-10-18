@@ -66,6 +66,12 @@ rollback;
 * Признак не правильной настройки work_mem переполненный каталог /var/lib/pgsql/14/base/pgsql_temp
 ## в первой сессии добавить новую запись
 
+## pg_file_settings
+* отображение раскоментированных параметров
+```sql
+select * from pg_file_settings;
+```
+
 ```bash
 iso=*# insert into persons(first_name, second_name) values('sergey', 'sergeev');
 INSERT 0 1
