@@ -19,13 +19,42 @@ show config_file
 /etc/postgresql/14/main/postgresql.conf - Ubuntu
 /user/local/var/postgres/postgres.conf - MacOS
 ```
-> расположение по умолчанию
+> полный путь передается аргументом к postmaster
 ```console
-/var/lib/pgsql/data/postgresql.conf - Centos
-/etc/postgresql/14/main/postgresql.conf - Ubuntu
-/user/local/var/postgres/postgres.conf - MacOS
+config_file=/etc/postgresql/14/main/postgresql.conf
 ```
+> пути к остальным файлам с параметрами задаются в нем же
+```console
+hba_file = '/etc/postgresql/14/main/pg_hba.conf'
+ident_file = '/etc/postgresql/14/main/pg_ident.conf'
+```
+## postgresql.auto.conf
+*имеет выше приоритет чем postgresql.conf, изменения вносятся через alter set*
 ## посмотреть текущий уровень изоляции
+
+## pg_settings
+* источник информации о параметрах и значениях
+* а так же откуда эти значения берутся
+* и как могут изменяться и применяться
+* расширенное представление show
+```sql
+select * from pg_settings;
+```
+```sql
+alter system set max_connections=200;
+```
+```sql
+select * from pg_settings where name=max_connections=200;
+```
+```sql
+select pg_reload_conf();
+```
+* user - применится на уровне сессии
+* sighup - нужен select pg_reload_conf()
+* postmaster - необходим рестарт сервиса
+* superuser - может задать на суперпользователь на уровне сессии
+* internal - параметры которые задаются на уровне сборки кластера
+* superuser-backend - применятся в рамках сессии для суперюзера при следующем входе
 
 ```bash
 iso=# show transaction isolation level;
