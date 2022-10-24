@@ -319,7 +319,7 @@ pg_resetwal -f /var/lib/pgsql/14/data/
 * Wal writer
 * Autovacuum
 
-## postgresql.conf
+## Асинхронная репликация - последовательное выполнение транзакций на всех репликахЮ
 *посмотреть расположение*
 ```sql
 show config_file
