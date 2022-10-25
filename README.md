@@ -528,7 +528,7 @@ sudo pg_dropcluster 12 main2
 * возможны конфликты с локальными данными
 * назначение: консолидация и общие спровочиник, обновление основной версии сервера, мастер-мастер в будущем
 
-## изменяем тип репликации на логическую
+## изменяем тип репликации на логическую на первом сервере, создаем бд, задаем пароль пользователю, перезагружаем кластер (повторяем данные процедуры еще на двух серверах)
 
 ```console
 postgres=# show wal_level;
@@ -539,10 +539,13 @@ postgres=# show wal_level;
 
 postgres=# ALTER SYSTEM SET wal_level = logical;
 ALTER SYSTEM
+postgres=# create database test;
+CREATE DATABASE
+postgres=# alter user postgres password 'postgres';
+ALTER ROLE
 postgres=# \q
 root@admekb:~# pg_ctlcluster 14 main restart
 root@admekb:~# sudo -u postgres psql
-could not change directory to "/root": Permission denied
 psql (14.5 (Ubuntu 14.5-2.pgdg22.04+2))
 Type "help" for help.
 
@@ -552,7 +555,9 @@ postgres=# show wal_level;
  logical
 (1 row)
 ```
-> полный путь передается аргументом к postmaster
+
+## повторяем данные процедуры для второго сервера
+
 ```console
 config_file=/etc/postgresql/14/main/postgresql.conf
 ```
