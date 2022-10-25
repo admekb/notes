@@ -516,12 +516,41 @@ sudo pg_dropcluster 12 main2
 
 
 ## Логическая репликация
+* wal_level = logical;
+* может быть двухнаправленной
+* нет мастера и реплики
+* на сервере создается публикация, на которую другие будут серверы могут подписываться
+* подписчику передается информация об изменениях строк в таблицах
+* публикующий сервер выдает изменения данных построчно в порядке их фиксации (реплицируются команды insert, update, delete), в 11 версии и TRUNCATE
+* возможна начальная синхронизация
+* DDL команды не передаются, таблица приемники нужно создавать вручную
+* применение происходит без применения команд SQL
+* возможны конфликты с локальными данными
+* назначение: консолидация и общие спровочиник, обновление основной версии сервера, мастер-мастер в будущем
 
->  расположение по умолчанию
+## изменяем тип репликации на логическую
+
 ```console
-/var/lib/pgsql/data/postgresql.conf - Centos
-/etc/postgresql/14/main/postgresql.conf - Ubuntu
-/user/local/var/postgres/postgres.conf - MacOS
+postgres=# show wal_level;
+ wal_level
+-----------
+ replica
+(1 row)
+
+postgres=# ALTER SYSTEM SET wal_level = logical;
+ALTER SYSTEM
+postgres=# \q
+root@admekb:~# pg_ctlcluster 14 main restart
+root@admekb:~# sudo -u postgres psql
+could not change directory to "/root": Permission denied
+psql (14.5 (Ubuntu 14.5-2.pgdg22.04+2))
+Type "help" for help.
+
+postgres=# show wal_level;
+ wal_level
+-----------
+ logical
+(1 row)
 ```
 > полный путь передается аргументом к postmaster
 ```console
