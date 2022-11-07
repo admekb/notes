@@ -552,12 +552,39 @@ Default_statistics_target = N (default value 100)
 
 ## Системные представления Postgres
 
-* pg_stat_database
-* pg_stats
-* pg_statistic_ext
-* pg_stat_activity
-* pg_stat_user_tables
-* pg_stat_user_indexes
+# pg_stat_database
+```sql
+select * from pg_stat_database where datname = 'demo';
+```
+Основные колонки:
+• blks_hit – количество блоков, полученных из кэша PostgreSQL
+• blks_read – количество блоков, прочитанных с диска
+• xact_commit – количество закомиченных транзацкий
+• xact_rollback – количество транзакций, где был выполнен откат транзакции
+Отсюда мы можем получить следующую информацию:
+1) Как много информации мы получаем из кэша
+2) Как часто у нас бывают проблемы с транзакциями
+# pg_class
+```sql
+select * from pg_class where relname = 'flights';
+```
+*построить план запроса*
+```sql
+explain select * from booking.flights;
+```
+*количество типов объектов в таблице*
+```sql
+select relkind, count(*) from pg_class group by relkind;
+```
+
+•relpages - размер представления этой таблицы на диске (в страницах размера BLCKSZ). Это лишь примерная оценка, используемая планировщиком. Она обновляется командами VACUUM, ANALYZE и несколькими командами DDL, например, CREATE INDEX.
+•reltuples - число строк в таблице. Это лишь примерная оценка, используемая планировщиком. Она обновляется командами VACUUM, ANALYZE и несколькими командами DDL, например, CREATE INDEX.
+•relallvisible - число страниц, помеченных как «полностью видимые» в карте видимости таблицы. Это лишь примерная оценка, используемая планировщиком. Она обновляется командами VACUUM, ANALYZE и несколькими командами DDL, например, CREATE INDEX.
+# pg_stats
+# pg_statistic_ext
+# pg_stat_activity
+# pg_stat_user_tables
+# pg_stat_user_indexes
 
 *посмотреть расположение*
 ```sql
