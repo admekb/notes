@@ -581,14 +581,96 @@ select relkind, count(*) from pg_class group by relkind;
 •reltuples - число строк в таблице. Это лишь примерная оценка, используемая планировщиком. Она обновляется командами VACUUM, ANALYZE и несколькими командами DDL, например, CREATE INDEX.
 •relallvisible - число страниц, помеченных как «полностью видимые» в карте видимости таблицы. Это лишь примерная оценка, используемая планировщиком. Она обновляется командами VACUUM, ANALYZE и несколькими командами DDL, например, CREATE INDEX.
 # pg_stats
+*информация о часто встречающихся значениях в колонке*
 # pg_statistic_ext
-# pg_stat_activity
-# pg_stat_user_tables
-# pg_stat_user_indexes
-
-*посмотреть расположение*
+*проверить как срабатывает статистика при выборке по двум столбцам*
 ```sql
-show config_file
+select count(*)
+from bookings.flights
+where flight_no = 'PG0007' and departure_airport = 'VKO'; --121
+
+explain
+select *
+from bookings.flights
+where flight_no = 'PG0007' and departure_airport = 'VKO';
 ```
-> расположение по умолчанию
-```console
+*кастомная статистика по взаимосвязанным столбцам*
+```sql
+create statistics flights_multi(dependencies) on flight_no,  departure_airport from bookings.flights;
+select * from pg_statistic_ext;
+analyze bookings.flights;
+```
+*кастомная статистика по различающимся столбцам*
+```sql
+create statistics flights_multi_dist(ndistinct) on departure_airport, arrival_airport from bookings.flights;
+select * from pg_statistic_ext;
+analyze bookings.flights;
+```
+# pg_stat_activity
+
+*просмотр активных подключений к бд*
+```sql
+select * from pg_stat_activity;
+```
+*прибить зависший/кривой процесс*
+```sql
+select pg_terminate_backend(8585);
+```
+Длина столбца query track_activity_query_size (значение в байтах)
+
+# pg_stat_user_tables
+*сбор статистики по таблице*
+```sql
+select * from pg_stat_user_tables where relname = 'flights';
+```
+# pg_stat_user_indexes
+*сбор статистики по использованию индексов по таблице*
+```sql
+select * from pg_stat_user_indexes where relname = 'flights'; 
+```
+*сбор статистики по неиспользуемым индексам по таблице*
+```sql
+SELECT s.schemaname,
+       s.relname AS tablename,
+       s.indexrelname AS indexname,
+       pg_size_pretty(pg_relation_size(s.indexrelid)) AS index_size,
+       s.idx_scan
+FROM pg_catalog.pg_stat_user_indexes s
+   JOIN pg_catalog.pg_index i ON s.indexrelid = i.indexrelid
+WHERE s.idx_scan =0      -- has never been scanned
+  AND 0 <>ALL (i.indkey)  -- no index column is an expression
+  AND NOT i.indisunique   -- is not a UNIQUE index
+  AND NOT EXISTS          -- does not enforce a constraint
+         (SELECT 1 FROM pg_catalog.pg_constraint c
+          WHERE c.conindid = s.indexrelid)
+ORDER BY pg_relation_size(s.indexrelid) DESC;
+```
+*собрать статистику*
+```sql
+analyse test1;
+```
+*удалить статистику*
+```sql
+drop statistics flights_multi_dist;
+```
+*посмотреть расположение (корреляцию) на диске*
+```sql
+select correlation from pg_stat where tablename = 'test2';
+```
+*создание кластерного индекса (упорядочивает расположение на диске)*
+```sql
+cluster generate_series_idx on test2;
+```
+# можно подключить расширение дополнительное для статистики
+```sql
+create extension pg_s
+
+show shared_preload_libraries;
+
+create extension pg_stat_statements;
+select * from pg_stat_statements;
+where query like '%bookings.bookings%';
+
+select *
+from bookings.bookings where book_ref = '00000F';
+```
